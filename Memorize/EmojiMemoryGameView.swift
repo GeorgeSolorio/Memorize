@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  EmojiMemoryGameView.swift
 //  Memorize
 //
 //  Created by George Solorio on 6/25/20.
@@ -10,7 +10,7 @@ import SwiftUI
 
 struct EmojiMemoryGameView: View {
     
-    var game: EmojiMemoryGame
+    @ObservedObject var game: EmojiMemoryGame
     
     var body: some View {
         HStack {
@@ -22,7 +22,6 @@ struct EmojiMemoryGameView: View {
         }
         .padding()
         .foregroundColor(Color.orange)
-        .font(.largeTitle)
     }
 }
 
@@ -31,19 +30,31 @@ struct CardView: View {
     var card: MemoryGame<String>.Card
     
     var body: some View {
+        GeometryReader { geometry in
+            self.body(for: geometry.size)
+        }
+    }
+    
+    func body(for size: CGSize) -> some View {
         ZStack {
             if card.isFaceUp {
-                RoundedRectangle(cornerRadius: 10.0).fill(Color.white)
-                RoundedRectangle(cornerRadius: 10.0).stroke(lineWidth: 3)
-                Text("\(card.content)").font(.largeTitle)
+                RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
+                RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: self.edgeLineWidth)
+                Text("\(card.content)")
             } else {
-                RoundedRectangle(cornerRadius: 10.0).fill()
+                RoundedRectangle(cornerRadius: cornerRadius).fill()
             }
         }
-        .frame(width: (200) * (2/3), height: 200, alignment: .center)
+        .aspectRatio(ratioSize, contentMode: .fit)
+        .font(Font.system(size: min(size.width, size.height) * fontScaleFactor))
     }
+    
+    // MARK: - Drawing Constants
+    let cornerRadius: CGFloat = 10.0
+    let edgeLineWidth: CGFloat = 3
+    let fontScaleFactor: CGFloat = 0.75
+    let ratioSize: CGFloat = 2/3
 }
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
